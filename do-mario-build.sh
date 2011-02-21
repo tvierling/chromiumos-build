@@ -1,13 +1,5 @@
 #!/bin/sh -e
 
-if [ ! -e /etc/debian_chroot ]; then
-	echo 'must be in chroot'
-	exit 1
-fi
-
-export CHROMEOS_VERSION_DEVSERVER=http://chromiumos.duh.org:8080
-export CHROMEOS_VERSION_AUSERVER=http://chromiumos.duh.org:8080/update
-
 cd $(dirname $0)
 TOOLDIR=$(pwd -P)
 cd ..
@@ -15,7 +7,16 @@ TOP=$(pwd -P)
 
 export BOARD=$(cat $TOP/src/scripts/.default_board)
 
+if ! grep -q chromiumos-overlay/chromeos /etc/debian_chroot 2>/dev/null; then
+	echo "(entering chroot...)"
+	cd src/scripts
+	exec ./enter_chroot.sh -- ../../$(basename $TOOLDIR)/do-mario-build.sh "$@"
+fi
+
 ##### build #####
+
+export CHROMEOS_VERSION_DEVSERVER=http://chromiumos.duh.org:8080
+export CHROMEOS_VERSION_AUSERVER=http://chromiumos.duh.org:8080/update
 
 cd $TOP/src/scripts
 
