@@ -10,7 +10,7 @@ export BOARD=$(cat $TOP/src/scripts/.default_board)
 if ! grep -q chromiumos-overlay/chromeos /etc/debian_chroot 2>/dev/null; then
 	echo "(entering chroot...)"
 	cd src/scripts
-	exec ./enter_chroot.sh -- ../../$(basename $TOOLDIR)/do-mario-build.sh "$@"
+	exec ./enter_chroot.sh -- ../../$(basename $TOOLDIR)/$(basename $0) "$@"
 fi
 
 ##### build #####
