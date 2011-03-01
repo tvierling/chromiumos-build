@@ -7,20 +7,19 @@ TOP=$(pwd -P)
 
 export BOARD=$(cat $TOP/src/scripts/.default_board)
 
-if ! grep -q chromiumos-overlay/chromeos /etc/debian_chroot 2>/dev/null; then
-	echo "(entering chroot...)"
-	cd src/scripts
-	exec ./enter_chroot.sh -- ../../$(basename $TOOLDIR)/$(basename $0) "$@"
-fi
-
 ##### build #####
-
-export CHROMEOS_VERSION_DEVSERVER=http://chromiumos.duh.org:8080
-export CHROMEOS_VERSION_AUSERVER=http://chromiumos.duh.org:8080/update
 
 cd $TOP/src/scripts
 
 if [ "$1" != "copy" ]; then
+	if ! grep -q chromiumos-overlay/chromeos /etc/debian_chroot 2>/dev/null; then
+		echo "(entering chroot...)"
+		exec ./enter_chroot.sh -- ../../$(basename $TOOLDIR)/$(basename $0) "$@"
+	fi
+
+	export CHROMEOS_VERSION_DEVSERVER=http://chromiumos.duh.org:8080
+	export CHROMEOS_VERSION_AUSERVER=http://chromiumos.duh.org:8080/update
+
 	(
 		./build_packages --jobs=4 --nousepkg --nowithautotest --nowithtest \
 			# --oldchromebinary
